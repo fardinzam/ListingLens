@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Lint, Build, and Test
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict
+
+      - name: Build and run tests
+        run: |
+          xcodebuild test \
+            -project ListingLens.xcodeproj \
+            -scheme ListingLens \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -derivedDataPath .derivedData

@@ -1,5 +1,7 @@
 # ListingLens
 
+[![CI](https://github.com/fardinzam/ListingLens/actions/workflows/ci.yml/badge.svg)](https://github.com/fardinzam/ListingLens/actions/workflows/ci.yml)
+
 ListingLens is an iPhone-first SwiftUI portfolio project for stay-quality, host reputation, and guest trust insights. It models a simplified Quality Reputation product: collect listing, review, reliability, accessibility, and support signals; turn them into explainable quality reports; then help hosts take the next best action while giving guests a clearer trust summary.
 
 The project is designed for the Airbnb Software Engineer, New Grad role on a Quality Reputation-style team. It emphasizes customer-facing product quality, proactive intervention, offline-aware iOS engineering, explainable scoring, accessibility, and cross-functional judgment.
