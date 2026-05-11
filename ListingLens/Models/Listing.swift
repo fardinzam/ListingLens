@@ -9,9 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Listing: Decodable {
-    typealias ID = String
-
+final class Listing: Decodable, Identifiable {
     @Attribute(.unique) var id: String
     var title: String
     var location: String

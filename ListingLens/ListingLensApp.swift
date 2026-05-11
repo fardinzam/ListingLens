@@ -16,7 +16,7 @@ struct ListingLensApp: App {
             Host.self,
             Listing.self,
             QualityReport.self,
-            CachedListing.self,
+            CachedListing.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

@@ -17,6 +17,9 @@ final class QualityReport: Decodable {
     var safetyScore: Int
     var accessibilityScore: Int
     var reviewSentiments: [ReviewSentiment]
+    var riskSignals: [QualitySignal]
+    var positiveSignals: [QualitySignal]
+    var recommendations: [Recommendation]
 
     init(
         overallScore: Int,
@@ -25,7 +28,10 @@ final class QualityReport: Decodable {
         communicationScore: Int,
         safetyScore: Int,
         accessibilityScore: Int,
-        reviewSentiments: [ReviewSentiment] = []
+        reviewSentiments: [ReviewSentiment] = [],
+        riskSignals: [QualitySignal] = [],
+        positiveSignals: [QualitySignal] = [],
+        recommendations: [Recommendation] = []
     ) {
         self.overallScore = overallScore
         self.cleanlinessScore = cleanlinessScore
@@ -34,6 +40,9 @@ final class QualityReport: Decodable {
         self.safetyScore = safetyScore
         self.accessibilityScore = accessibilityScore
         self.reviewSentiments = reviewSentiments
+        self.riskSignals = riskSignals
+        self.positiveSignals = positiveSignals
+        self.recommendations = recommendations
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -44,6 +53,9 @@ final class QualityReport: Decodable {
         case safetyScore
         case accessibilityScore
         case reviewSentiments
+        case riskSignals
+        case positiveSignals
+        case recommendations
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -55,6 +67,9 @@ final class QualityReport: Decodable {
         let safetyScore = try container.decode(Int.self, forKey: .safetyScore)
         let accessibilityScore = try container.decode(Int.self, forKey: .accessibilityScore)
         let reviewSentiments = try container.decodeIfPresent([ReviewSentiment].self, forKey: .reviewSentiments) ?? []
+        let riskSignals = try container.decodeIfPresent([QualitySignal].self, forKey: .riskSignals) ?? []
+        let positiveSignals = try container.decodeIfPresent([QualitySignal].self, forKey: .positiveSignals) ?? []
+        let recommendations = try container.decodeIfPresent([Recommendation].self, forKey: .recommendations) ?? []
 
         self.init(
             overallScore: overallScore,
@@ -63,7 +78,46 @@ final class QualityReport: Decodable {
             communicationScore: communicationScore,
             safetyScore: safetyScore,
             accessibilityScore: accessibilityScore,
-            reviewSentiments: reviewSentiments
+            reviewSentiments: reviewSentiments,
+            riskSignals: riskSignals,
+            positiveSignals: positiveSignals,
+            recommendations: recommendations
         )
     }
+}
+
+struct QualitySignal: Codable, Hashable, Identifiable {
+    let id: String
+    let category: String
+    let severity: SignalSeverity
+    let claimType: String
+    let title: String
+    let explanation: String
+    let frequency: Int
+}
+
+enum SignalSeverity: String, Codable, Hashable {
+    case low
+    case medium
+    case high
+    case critical
+}
+
+struct Recommendation: Codable, Hashable, Identifiable {
+    let id: String
+    let listingId: String
+    let title: String
+    let hostAction: String
+    let expectedImpact: String
+    let confidenceLevel: String
+    let claimType: String
+    var status: RecommendationStatus
+    let priorityScore: Int
+    let evidenceSignalIds: [String]
+}
+
+enum RecommendationStatus: String, Codable, Hashable {
+    case suggested
+    case dismissed
+    case completed
 }

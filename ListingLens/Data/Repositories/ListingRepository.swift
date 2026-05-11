@@ -31,6 +31,7 @@ struct DataSnapshot<Value> {
 protocol ListingRepositoryProtocol {
     func listings(policy: FetchPolicy) -> AsyncThrowingStream<DataSnapshot<[Listing]>, Error>
     func listing(id: Listing.ID, policy: FetchPolicy) -> AsyncThrowingStream<DataSnapshot<Listing>, Error>
+    func completeRecommendation(id: String) async throws
 }
 
 @MainActor
@@ -49,15 +50,12 @@ final class ListingRepository: ListingRepositoryProtocol {
                 do {
                     let cachedListings = try fetchCachedListings()
                     if policy != .refresh {
-                        continuation.yield(
-                            DataSnapshot(
-                                value: cachedListings.map { $0.toDomainModel() },
-                                source: .cache,
-                                fetchedAt: cachedListings.map(\.fetchedAt).max(),
-                                isStale: policy == .staleWhileRefresh,
-                                isOfflineFallback: false,
-                                refreshError: nil
-                            )
+                        yieldCachedListings(
+                            cachedListings,
+                            isStale: policy == .staleWhileRefresh,
+                            isOfflineFallback: false,
+                            refreshError: nil,
+                            to: continuation
                         )
                     }
 
@@ -66,42 +64,11 @@ final class ListingRepository: ListingRepositoryProtocol {
                         return
                     }
 
-                    let response: ListingIndexResponseDTO = try await apiService.fetch(endpoint: "/v1/listings")
-                    let freshListings = response.data.map { $0.toDomainModel() }
-                    try upsertCache(with: freshListings, fetchedAt: response.meta.fetchedAt)
-                    continuation.yield(
-                        DataSnapshot(
-                            value: freshListings,
-                            source: .network,
-                            fetchedAt: response.meta.fetchedAt,
-                            isStale: false,
-                            isOfflineFallback: false,
-                            refreshError: nil
-                        )
-                    )
+                    continuation.yield(try await fetchFreshListingsSnapshot())
                     continuation.finish()
                 } catch {
-                    if policy == .staleWhileRefresh {
-                        do {
-                            let cachedListings = try fetchCachedListings()
-                            if !cachedListings.isEmpty {
-                                continuation.yield(
-                                    DataSnapshot(
-                                        value: cachedListings.map { $0.toDomainModel() },
-                                        source: .cache,
-                                        fetchedAt: cachedListings.map(\.fetchedAt).max(),
-                                        isStale: true,
-                                        isOfflineFallback: true,
-                                        refreshError: error
-                                    )
-                                )
-                                continuation.finish()
-                                return
-                            }
-                        } catch {
-                            continuation.finish(throwing: error)
-                            return
-                        }
+                    if finishWithOfflineFallback(policy: policy, error: error, continuation: continuation) {
+                        return
                     }
 
                     continuation.finish(throwing: error)
@@ -114,12 +81,80 @@ final class ListingRepository: ListingRepositoryProtocol {
         }
     }
 
+    private func fetchFreshListingsSnapshot() async throws -> DataSnapshot<[Listing]> {
+        let response: ListingIndexResponseDTO = try await apiService.fetch(endpoint: "/v1/listings")
+        let freshListings = response.data.map { $0.toDomainModel() }
+        try upsertCache(with: freshListings, fetchedAt: response.meta.fetchedAt)
+
+        return DataSnapshot(
+            value: freshListings,
+            source: .network,
+            fetchedAt: response.meta.fetchedAt,
+            isStale: false,
+            isOfflineFallback: false,
+            refreshError: nil
+        )
+    }
+
+    private func finishWithOfflineFallback(
+        policy: FetchPolicy,
+        error: Error,
+        continuation: AsyncThrowingStream<DataSnapshot<[Listing]>, Error>.Continuation
+    ) -> Bool {
+        guard policy == .staleWhileRefresh else {
+            return false
+        }
+
+        do {
+            let cachedListings = try fetchCachedListings()
+            guard !cachedListings.isEmpty else {
+                return false
+            }
+
+            yieldCachedListings(
+                cachedListings,
+                isStale: true,
+                isOfflineFallback: true,
+                refreshError: error,
+                to: continuation
+            )
+            continuation.finish()
+            return true
+        } catch {
+            continuation.finish(throwing: error)
+            return true
+        }
+    }
+
+    private func yieldCachedListings(
+        _ cachedListings: [CachedListing],
+        isStale: Bool,
+        isOfflineFallback: Bool,
+        refreshError: Error?,
+        to continuation: AsyncThrowingStream<DataSnapshot<[Listing]>, Error>.Continuation
+    ) {
+        continuation.yield(
+            DataSnapshot(
+                value: cachedListings.map { $0.toDomainModel() },
+                source: .cache,
+                fetchedAt: cachedListings.map(\.fetchedAt).max(),
+                isStale: isStale,
+                isOfflineFallback: isOfflineFallback,
+                refreshError: refreshError
+            )
+        )
+    }
+
     func listing(id: Listing.ID, policy: FetchPolicy) -> AsyncThrowingStream<DataSnapshot<Listing>, Error> {
         AsyncThrowingStream { continuation in
             let task = Task { @MainActor in
                 do {
                     for try await snapshot in listings(policy: policy) {
                         if let listing = snapshot.value.first(where: { $0.id == id }) {
+                            if snapshot.source == .network {
+                                listing.qualityReport = try await fetchQualityReport(for: id)
+                            }
+
                             continuation.yield(
                                 DataSnapshot(
                                     value: listing,
@@ -142,6 +177,12 @@ final class ListingRepository: ListingRepositoryProtocol {
                 task.cancel()
             }
         }
+    }
+
+    func completeRecommendation(id: String) async throws {
+        // Recommendation mutations are local-only for the MVP. The ViewModel
+        // updates the visible state optimistically while this repository method
+        // preserves the future API boundary for persisted mutation handling.
     }
 
     private func fetchCachedListings() throws -> [CachedListing] {
@@ -169,6 +210,13 @@ final class ListingRepository: ListingRepositoryProtocol {
             }
         }
         try modelContext.save()
+    }
+
+    private func fetchQualityReport(for listingID: Listing.ID) async throws -> QualityReport {
+        let response: ListingQualityReportResponseDTO = try await apiService.fetch(
+            endpoint: "/v1/listings/\(listingID)/quality-report"
+        )
+        return response.data.qualityReport.toDomainModel()
     }
 }
 
