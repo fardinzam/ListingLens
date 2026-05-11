@@ -10,6 +10,9 @@ import SwiftData
 
 @Model
 final class Listing: Decodable {
+    typealias ID = String
+
+    @Attribute(.unique) var id: String
     var title: String
     var location: String
     var thumbnailURL: URL?
@@ -17,12 +20,14 @@ final class Listing: Decodable {
     @Relationship(deleteRule: .cascade) var qualityReport: QualityReport?
 
     init(
+        id: String = UUID().uuidString,
         title: String,
         location: String,
         thumbnailURL: URL? = nil,
         host: Host? = nil,
         qualityReport: QualityReport? = nil
     ) {
+        self.id = id
         self.title = title
         self.location = location
         self.thumbnailURL = thumbnailURL
@@ -31,6 +36,7 @@ final class Listing: Decodable {
     }
 
     private enum CodingKeys: String, CodingKey {
+        case id
         case title
         case location
         case thumbnailURL
@@ -40,6 +46,7 @@ final class Listing: Decodable {
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
         let title = try container.decode(String.self, forKey: .title)
         let location = try container.decode(String.self, forKey: .location)
         let thumbnailURL = try container.decodeIfPresent(URL.self, forKey: .thumbnailURL)
@@ -47,6 +54,7 @@ final class Listing: Decodable {
         let qualityReport = try container.decodeIfPresent(QualityReport.self, forKey: .qualityReport)
 
         self.init(
+            id: id,
             title: title,
             location: location,
             thumbnailURL: thumbnailURL,
