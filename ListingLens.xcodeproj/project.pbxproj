@@ -27,10 +27,14 @@
 		5C68C6932FB1CED300DAA561 /* ListingLens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ListingLens.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C68C6A22FB1CED600DAA561 /* ListingLensTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ListingLensTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C68C6AC2FB1CED600DAA561 /* ListingLensUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ListingLensUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5C7E76F22FB237EC0061525E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		5C68C6952FB1CED300DAA561 /* ListingLens */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ListingLens;
+			sourceTree = "<group>";
+		};
 		5C68C6A52FB1CED600DAA561 /* ListingLensTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ListingLensTests;
@@ -39,16 +43,6 @@
 		5C68C6AF2FB1CED600DAA561 /* ListingLensUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ListingLensUITests;
-			sourceTree = "<group>";
-		};
-		5C7E76C42FB2312E0061525E /* ListingLens */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ListingLens;
-			sourceTree = "<group>";
-		};
-		5C7E770C2FB2382D0061525E /* docs */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -81,12 +75,10 @@
 		5C68C68A2FB1CED300DAA561 = {
 			isa = PBXGroup;
 			children = (
-				5C7E76C42FB2312E0061525E /* ListingLens */,
+				5C68C6952FB1CED300DAA561 /* ListingLens */,
 				5C68C6A52FB1CED600DAA561 /* ListingLensTests */,
 				5C68C6AF2FB1CED600DAA561 /* ListingLensUITests */,
 				5C68C6942FB1CED300DAA561 /* Products */,
-				5C7E770C2FB2382D0061525E /* docs */,
-				5C7E76F22FB237EC0061525E /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -116,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				5C7E76C42FB2312E0061525E /* ListingLens */,
+				5C68C6952FB1CED300DAA561 /* ListingLens */,
 			);
 			name = ListingLens;
 			packageProductDependencies = (
