@@ -1,0 +1,274 @@
+{
+  "data": {
+    "listing": {
+      "id": "stay_1001",
+      "title": "Bright Mission Studio Near Transit",
+      "locationSummary": "Mission District, San Francisco",
+      "hostId": "host_501"
+    },
+    "qualityReport": {
+      "id": "qr_stay_1001_2026_05_10",
+      "listingId": "stay_1001",
+      "overallScore": 84,
+      "confidenceLevel": "high",
+      "dataCompleteness": 0.92,
+      "trend": {
+        "direction": "declining",
+        "delta30Days": -6,
+        "summary": "Quality score declined due to recent check-in friction."
+      },
+      "scoreBreakdown": [
+        {
+          "category": "cleanliness",
+          "label": "Cleanliness",
+          "score": 91,
+          "weight": 0.2,
+          "weightedContribution": 18.2,
+          "confidenceLevel": "high",
+          "dataCompleteness": 0.95,
+          "evidenceCount": 18,
+          "explanation": "Recent reviews consistently mention clean linens and a spotless bathroom."
+        },
+        {
+          "category": "checkInReliability",
+          "label": "Check-in reliability",
+          "score": 68,
+          "weight": 0.2,
+          "weightedContribution": 13.6,
+          "confidenceLevel": "high",
+          "dataCompleteness": 0.9,
+          "evidenceCount": 7,
+          "explanation": "Four recent reviews mention difficulty finding the lockbox or entrance after dark."
+        },
+        {
+          "category": "accuracy",
+          "label": "Accuracy",
+          "score": 86,
+          "weight": 0.15,
+          "weightedContribution": 12.9,
+          "confidenceLevel": "medium",
+          "dataCompleteness": 0.78,
+          "evidenceCount": 9,
+          "explanation": "Most guests say the listing matches the photos, with some noise-context gaps."
+        },
+        {
+          "category": "communication",
+          "label": "Communication",
+          "score": 88,
+          "weight": 0.15,
+          "weightedContribution": 13.2,
+          "confidenceLevel": "high",
+          "dataCompleteness": 0.94,
+          "evidenceCount": 14,
+          "explanation": "Host response time is under one hour for most guest questions."
+        },
+        {
+          "category": "cancellationReliability",
+          "label": "Cancellation reliability",
+          "score": 96,
+          "weight": 0.1,
+          "weightedContribution": 9.6,
+          "confidenceLevel": "high",
+          "dataCompleteness": 1.0,
+          "evidenceCount": 0,
+          "explanation": "No host-initiated cancellations in the fixture history."
+        },
+        {
+          "category": "safetySignals",
+          "label": "Safety signals",
+          "score": 90,
+          "weight": 0.1,
+          "weightedContribution": 9.0,
+          "confidenceLevel": "medium",
+          "dataCompleteness": 0.7,
+          "evidenceCount": 1,
+          "explanation": "One low-severity report was resolved; no recent critical safety reports."
+        },
+        {
+          "category": "accessibilityCompleteness",
+          "label": "Accessibility completeness",
+          "score": 80,
+          "weight": 0.1,
+          "weightedContribution": 8.0,
+          "confidenceLevel": "medium",
+          "dataCompleteness": 0.8,
+          "evidenceCount": 6,
+          "explanation": "Host provided most accessibility detail fields, but doorway width is missing."
+        }
+      ],
+      "primaryInsight": {
+        "title": "Improve check-in clarity",
+        "description": "Check-in reliability is the lowest weighted category and is driving the recent decline.",
+        "severity": "high",
+        "claimType": "inferred",
+        "evidenceSignalIds": [
+          "sig_checkin_001",
+          "theme_checkin_lockbox"
+        ]
+      },
+      "riskSignals": [
+        {
+          "id": "sig_checkin_001",
+          "category": "checkInReliability",
+          "severity": "high",
+          "claimType": "guestReported",
+          "title": "Guests report lockbox confusion",
+          "explanation": "Four check-in complaints in the last 30 days mention the lockbox location.",
+          "frequency": 4,
+          "firstSeenAt": "2026-04-14T12:00:00Z",
+          "lastSeenAt": "2026-05-08T20:41:00Z",
+          "source": "reviewThemes"
+        },
+        {
+          "id": "sig_accuracy_002",
+          "category": "accuracy",
+          "severity": "medium",
+          "claimType": "guestReported",
+          "title": "Street noise context is incomplete",
+          "explanation": "Two recent reviews mention street noise after 10 PM.",
+          "frequency": 2,
+          "firstSeenAt": "2026-04-20T09:00:00Z",
+          "lastSeenAt": "2026-05-02T16:15:00Z",
+          "source": "reviewThemes"
+        }
+      ],
+      "positiveSignals": [
+        {
+          "id": "sig_clean_001",
+          "category": "cleanliness",
+          "severity": "low",
+          "claimType": "guestReported",
+          "title": "Cleanliness is consistently praised",
+          "explanation": "Nine recent reviews mention spotless surfaces, clean linens, or a clean bathroom.",
+          "frequency": 9,
+          "source": "reviewThemes"
+        },
+        {
+          "id": "sig_host_001",
+          "category": "communication",
+          "severity": "low",
+          "claimType": "verified",
+          "title": "Fast host response time",
+          "explanation": "Median response time is 42 minutes across recent guest messages.",
+          "frequency": 12,
+          "source": "hostMetrics"
+        }
+      ],
+      "aiSignals": {
+        "summary": "Guests are happy with cleanliness and communication, but recent check-in comments suggest preventable arrival friction.",
+        "claimType": "inferred",
+        "generatedBy": "deterministicQualityCoach",
+        "themes": [
+          {
+            "id": "theme_checkin_lockbox",
+            "label": "Lockbox hard to find",
+            "category": "checkInReliability",
+            "sentiment": "negative",
+            "mentions": 4,
+            "representativeEvidence": [
+              {
+                "reviewId": "rev_9001",
+                "excerpt": "The room was great, but I walked past the lockbox twice in the dark.",
+                "createdAt": "2026-05-08T20:41:00Z"
+              },
+              {
+                "reviewId": "rev_8994",
+                "excerpt": "Clearer arrival photos would have helped a lot.",
+                "createdAt": "2026-04-28T18:20:00Z"
+              }
+            ]
+          },
+          {
+            "id": "theme_cleanliness_positive",
+            "label": "Clean and well stocked",
+            "category": "cleanliness",
+            "sentiment": "positive",
+            "mentions": 9,
+            "representativeEvidence": [
+              {
+                "reviewId": "rev_8998",
+                "excerpt": "The studio was spotless and had everything I needed.",
+                "createdAt": "2026-05-03T17:30:00Z"
+              }
+            ]
+          }
+        ]
+      },
+      "accessibility": {
+        "claimType": "hostProvided",
+        "completenessScore": 80,
+        "lastUpdatedAt": "2026-04-25T10:00:00Z",
+        "disclaimer": "Accessibility details are host-provided information completeness, not verified accessibility compliance.",
+        "features": {
+          "stepFreeAccess": {
+            "available": true,
+            "claimType": "hostProvided",
+            "details": "Step-free path from sidewalk to building entrance."
+          },
+          "elevator": {
+            "available": true,
+            "claimType": "hostProvided",
+            "details": "Elevator available from lobby to unit floor."
+          },
+          "wideDoorways": {
+            "available": false,
+            "claimType": "hostProvided",
+            "details": "Doorway width not confirmed."
+          },
+          "accessibleParking": {
+            "available": false,
+            "claimType": "hostProvided",
+            "details": "No dedicated accessible parking listed."
+          },
+          "stepFreeShower": {
+            "available": true,
+            "claimType": "hostProvided",
+            "details": "Shower entry is listed as step-free."
+          },
+          "captionsOnMedia": {
+            "available": true,
+            "claimType": "verified",
+            "details": "Listing video captions are present in fixture metadata."
+          },
+          "serviceAnimalPolicyClarity": {
+            "available": true,
+            "claimType": "hostProvided",
+            "details": "Listing rules include service-animal policy guidance."
+          }
+        },
+        "missingFields": [
+          "wideDoorwayMeasurements",
+          "bathroomGrabBarDetails"
+        ]
+      },
+      "recommendations": [
+        {
+          "id": "rec_checkin_photos_001",
+          "listingId": "stay_1001",
+          "title": "Add photo-based arrival instructions",
+          "hostAction": "Upload three photos showing the entrance, lockbox location, and door code sequence.",
+          "expectedImpact": "Reduce guest-reported check-in issues.",
+          "confidenceLevel": "high",
+          "claimType": "inferred",
+          "status": "suggested",
+          "priorityScore": 94,
+          "evidenceSignalIds": [
+            "sig_checkin_001",
+            "theme_checkin_lockbox"
+          ],
+          "createdAt": "2026-05-10T19:00:00Z"
+        }
+      ],
+      "freshness": {
+        "fetchedAt": "2026-05-10T19:00:00Z",
+        "expiresAt": "2026-05-10T19:30:00Z",
+        "schemaVersion": 1
+      }
+    }
+  },
+  "meta": {
+    "fixtureName": "listings.stay_1001.quality_report.json",
+    "requestId": "mock_req_quality_stay_1001",
+    "generatedAt": "2026-05-10T19:00:00Z"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "data": [
+    {
+      "id": "stay_1001",
+      "title": "Bright Mission Studio Near Transit",
+      "locationSummary": "Mission District, San Francisco",
+      "thumbnailURL": "mock://images/stay_1001_hero",
+      "host": {
+        "id": "host_501",
+        "displayName": "Maya",
+        "isSuperhostLike": true,
+        "responseTimeMinutes": 42
+      },
+      "summary": {
+        "overallScore": 84,
+        "confidenceLevel": "high",
+        "dataCompleteness": 0.92,
+        "trendDirection": "declining",
+        "primaryInsight": {
+          "title": "Check-in friction is increasing",
+          "description": "Recent reviews mention difficulty finding the lockbox and entrance after dark.",
+          "severity": "high",
+          "claimType": "guestReported"
+        }
+      },
+      "badges": [
+        {
+          "id": "badge_reliable_host",
+          "label": "Reliable host",
+          "explanation": "Host response time and cancellation history are stronger than the fixture baseline.",
+          "claimType": "inferred"
+        },
+        {
+          "id": "badge_accessibility_details",
+          "label": "Accessibility details available",
+          "explanation": "Host has provided step-free access, elevator, and doorway detail fields.",
+          "claimType": "hostProvided"
+        }
+      ],
+      "accessibilitySummary": {
+        "completenessScore": 80,
+        "claimType": "hostProvided",
+        "stepFreeAccess": true,
+        "elevator": true,
+        "wideDoorways": false
+      },
+      "updatedAt": "2026-05-10T18:25:00Z"
+    },
+    {
+      "id": "stay_1002",
+      "title": "Quiet Garden Room by Lake Union",
+      "locationSummary": "Eastlake, Seattle",
+      "thumbnailURL": "mock://images/stay_1002_hero",
+      "host": {
+        "id": "host_502",
+        "displayName": "Jon",
+        "isSuperhostLike": false,
+        "responseTimeMinutes": 118
+      },
+      "summary": {
+        "overallScore": 76,
+        "confidenceLevel": "medium",
+        "dataCompleteness": 0.74,
+        "trendDirection": "stable",
+        "primaryInsight": {
+          "title": "Accuracy details need review",
+          "description": "Several reviews mention that street noise is higher than expected.",
+          "severity": "medium",
+          "claimType": "guestReported"
+        }
+      },
+      "badges": [
+        {
+          "id": "badge_clean_reviews",
+          "label": "Consistent cleanliness",
+          "explanation": "Cleanliness mentions are positive across recent review themes.",
+          "claimType": "guestReported"
+        }
+      ],
+      "accessibilitySummary": {
+        "completenessScore": 45,
+        "claimType": "hostProvided",
+        "stepFreeAccess": false,
+        "elevator": false,
+        "wideDoorways": null
+      },
+      "updatedAt": "2026-05-09T21:10:00Z"
+    }
+  ],
+  "meta": {
+    "count": 2,
+    "fetchedAt": "2026-05-10T19:00:00Z",
+    "fixtureName": "listings.index.json"
+  }
+}
