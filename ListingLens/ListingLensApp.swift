@@ -13,6 +13,9 @@ struct ListingLensApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            Host.self,
+            Listing.self,
+            QualityReport.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
