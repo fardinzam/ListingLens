@@ -153,12 +153,3 @@ This pattern demonstrates offline support, async programming, local persistence,
 5. Build the Host Dashboard, Guest Trust View, and Quality Report Detail.
 6. Add accessibility polish, offline banners, and the deterministic AI Quality Coach.
 7. Add focused UI tests for the demo path.
-
-## Resume Signal
-
-ListingLens is intended to support resume bullets like:
-
-- Built an iPhone-first SwiftUI trust and quality app using Observation, SwiftData, async/await, and fixture-backed REST/GraphQL clients.
-- Implemented stale-while-refresh quality reports that render cached trust data immediately while refreshing safety and recommendation signals.
-- Designed an explainable quality scoring engine with confidence, data completeness, and evidence-grounded recommendations.
-- Documented product, design, data science, legal, accessibility, and offline-support tradeoffs for a customer-facing reputation system.
