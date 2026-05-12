@@ -20,6 +20,8 @@ final class QualityReport: Decodable {
     var riskSignals: [QualitySignal]
     var positiveSignals: [QualitySignal]
     var recommendations: [Recommendation]
+    var trendDirection: TrendDirection
+    var accessibilityFeatures: [AccessibilityFeature]
 
     init(
         overallScore: Int,
@@ -31,7 +33,9 @@ final class QualityReport: Decodable {
         reviewSentiments: [ReviewSentiment] = [],
         riskSignals: [QualitySignal] = [],
         positiveSignals: [QualitySignal] = [],
-        recommendations: [Recommendation] = []
+        recommendations: [Recommendation] = [],
+        trendDirection: TrendDirection = .stable,
+        accessibilityFeatures: [AccessibilityFeature] = []
     ) {
         self.overallScore = overallScore
         self.cleanlinessScore = cleanlinessScore
@@ -43,6 +47,8 @@ final class QualityReport: Decodable {
         self.riskSignals = riskSignals
         self.positiveSignals = positiveSignals
         self.recommendations = recommendations
+        self.trendDirection = trendDirection
+        self.accessibilityFeatures = accessibilityFeatures
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -56,6 +62,8 @@ final class QualityReport: Decodable {
         case riskSignals
         case positiveSignals
         case recommendations
+        case trendDirection
+        case accessibilityFeatures
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -70,6 +78,11 @@ final class QualityReport: Decodable {
         let riskSignals = try container.decodeIfPresent([QualitySignal].self, forKey: .riskSignals) ?? []
         let positiveSignals = try container.decodeIfPresent([QualitySignal].self, forKey: .positiveSignals) ?? []
         let recommendations = try container.decodeIfPresent([Recommendation].self, forKey: .recommendations) ?? []
+        let trendDirection = try container.decodeIfPresent(TrendDirection.self, forKey: .trendDirection) ?? .stable
+        let accessibilityFeatures = try container.decodeIfPresent(
+            [AccessibilityFeature].self,
+            forKey: .accessibilityFeatures
+        ) ?? []
 
         self.init(
             overallScore: overallScore,
@@ -81,9 +94,18 @@ final class QualityReport: Decodable {
             reviewSentiments: reviewSentiments,
             riskSignals: riskSignals,
             positiveSignals: positiveSignals,
-            recommendations: recommendations
+            recommendations: recommendations,
+            trendDirection: trendDirection,
+            accessibilityFeatures: accessibilityFeatures
         )
     }
+}
+
+enum TrendDirection: String, Codable, Hashable {
+    case improving
+    case stable
+    case declining
+    case insufficientData
 }
 
 struct QualitySignal: Codable, Hashable, Identifiable {
@@ -120,4 +142,13 @@ enum RecommendationStatus: String, Codable, Hashable {
     case suggested
     case dismissed
     case completed
+}
+
+struct AccessibilityFeature: Codable, Hashable, Identifiable {
+    var id: String { name }
+
+    let name: String
+    let isAvailable: Bool
+    let claimType: String
+    let details: String
 }

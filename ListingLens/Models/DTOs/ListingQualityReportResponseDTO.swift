@@ -30,11 +30,19 @@ struct QualityReportDTO: Decodable, Equatable {
     let overallScore: Int
     let confidenceLevel: String
     let dataCompleteness: Double
+    let trend: QualityTrendDTO
     let scoreBreakdown: [CategoryScoreDTO]
     let riskSignals: [QualitySignalDTO]
     let positiveSignals: [QualitySignalDTO]
     let aiSignals: AISignalsDTO
+    let accessibility: AccessibilityDetailDTO
     let recommendations: [RecommendationDTO]
+}
+
+struct QualityTrendDTO: Decodable, Equatable {
+    let direction: TrendDirection
+    let delta30Days: Int
+    let summary: String
 }
 
 struct CategoryScoreDTO: Decodable, Equatable {
@@ -81,6 +89,28 @@ struct RecommendationDTO: Decodable, Equatable {
     let evidenceSignalIds: [String]
 }
 
+struct AccessibilityDetailDTO: Decodable, Equatable {
+    let claimType: String
+    let completenessScore: Int
+    let features: AccessibilityFeaturesDTO
+}
+
+struct AccessibilityFeaturesDTO: Decodable, Equatable {
+    let stepFreeAccess: AccessibilityFeatureDTO
+    let elevator: AccessibilityFeatureDTO
+    let wideDoorways: AccessibilityFeatureDTO
+    let accessibleParking: AccessibilityFeatureDTO
+    let stepFreeShower: AccessibilityFeatureDTO
+    let captionsOnMedia: AccessibilityFeatureDTO
+    let serviceAnimalPolicyClarity: AccessibilityFeatureDTO
+}
+
+struct AccessibilityFeatureDTO: Decodable, Equatable {
+    let available: Bool
+    let claimType: String
+    let details: String
+}
+
 struct QualityReportMetaDTO: Decodable, Equatable {
     let fixtureName: String
     let requestId: String
@@ -101,12 +131,39 @@ extension QualityReportDTO {
             },
             riskSignals: riskSignals.map { $0.toDomainModel() },
             positiveSignals: positiveSignals.map { $0.toDomainModel() },
-            recommendations: recommendations.map { $0.toDomainModel() }
+            recommendations: recommendations.map { $0.toDomainModel() },
+            trendDirection: trend.direction,
+            accessibilityFeatures: accessibility.toDomainModel()
         )
     }
 
     private func score(for category: String) -> Int {
         scoreBreakdown.first { $0.category == category }?.score ?? 0
+    }
+}
+
+private extension AccessibilityDetailDTO {
+    func toDomainModel() -> [AccessibilityFeature] {
+        [
+            features.stepFreeAccess.toDomainModel(name: "Step-free access"),
+            features.elevator.toDomainModel(name: "Elevator"),
+            features.wideDoorways.toDomainModel(name: "Wide doorways"),
+            features.accessibleParking.toDomainModel(name: "Accessible parking"),
+            features.stepFreeShower.toDomainModel(name: "Step-free shower"),
+            features.captionsOnMedia.toDomainModel(name: "Captions on media"),
+            features.serviceAnimalPolicyClarity.toDomainModel(name: "Service animal policy")
+        ]
+    }
+}
+
+private extension AccessibilityFeatureDTO {
+    func toDomainModel(name: String) -> AccessibilityFeature {
+        AccessibilityFeature(
+            name: name,
+            isAvailable: available,
+            claimType: claimType,
+            details: details
+        )
     }
 }
 

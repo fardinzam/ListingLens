@@ -1,0 +1,52 @@
+{
+  "data": {
+    "listing": {
+      "id": "stay_1001",
+      "title": "Bright Mission Studio Near Transit",
+      "qualityReport": {
+        "overallScore": 84,
+        "confidenceLevel": "high",
+        "dataCompleteness": 0.92,
+        "scoreBreakdown": [
+          {
+            "category": "checkInReliability",
+            "score": 68,
+            "weight": 0.2,
+            "weightedContribution": 13.6,
+            "confidenceLevel": "high",
+            "dataCompleteness": 0.9,
+            "explanation": "Four recent reviews mention difficulty finding the lockbox or entrance after dark."
+          },
+          {
+            "category": "cleanliness",
+            "score": 91,
+            "weight": 0.2,
+            "weightedContribution": 18.2,
+            "confidenceLevel": "high",
+            "dataCompleteness": 0.95,
+            "explanation": "Nine recent reviews mention spotless surfaces, clean linens, or a clean bathroom."
+          }
+        ],
+        "riskSignals": [
+          {
+            "id": "sig_checkin_001",
+            "category": "checkInReliability",
+            "severity": "high",
+            "claimType": "guestReported",
+            "title": "Guests report lockbox confusion",
+            "explanation": "Four check-in complaints in the last 30 days mention the lockbox location."
+          }
+        ],
+        "positiveSignals": [
+          {
+            "id": "sig_clean_001",
+            "category": "cleanliness",
+            "claimType": "guestReported",
+            "title": "Cleanliness is consistently praised",
+            "explanation": "Nine recent reviews mention spotless surfaces, clean linens, or a clean bathroom."
+          }
+        ]
+      }
+    }
+  }
+}
