@@ -6,6 +6,27 @@ ListingLens is an iPhone-first SwiftUI portfolio project for stay-quality, host 
 
 The project is designed for the Airbnb Software Engineer, New Grad role on a Quality Reputation-style team. It emphasizes customer-facing product quality, proactive intervention, offline-aware iOS engineering, explainable scoring, accessibility, and cross-functional judgment.
 
+## Highlights
+
+- Host Dashboard and Guest Trust flows built with SwiftUI, Swift Observation, and typed ViewModels.
+- SwiftData-backed stale-while-refresh repository logic renders cached listing data immediately, then refreshes bundled API data in the background.
+- REST-shaped mock API fixtures power listing summaries and quality report loading through typed `Decodable` DTOs.
+- GraphQL-shaped `ListingQualityDetails` fixture powers the full Quality Report detail screen.
+- Accessibility-conscious trust badges use icon plus text and preserve claim type: verified, host-provided, guest-reported, or inferred.
+- Swift Testing unit coverage exercises scoring, fixture decoding, repository streaming, and ViewModel behavior.
+- GitHub Actions CI runs SwiftLint plus Xcode build/test on macOS.
+
+Design reference: [ListingLens Figma component and screen file](https://www.figma.com/design/Zlo4IFwAXEm4W94z1HyRCf/ListingLens-Shared-UI-Components?node-id=0-1&t=srHFpb4e3CbVgGmz-1)
+
+## Quick Start
+
+1. Open `ListingLens.xcodeproj` in Xcode.
+2. Select the `ListingLens` scheme and an iPhone simulator.
+3. Run the app.
+4. Use the bottom tabs:
+   - `Host`: review the host-facing quality score, stale-data behavior, primary insight, recommendations, score breakdown, and review themes.
+   - `Guest`: review the guest-facing trust summary, reliability indicators, host-provided accessibility highlights, review themes, and the GraphQL-backed full quality report.
+
 ## Why This Project
 
 Airbnb's Quality Reputation work sits at the intersection of trust, safety, supply quality, and user experience. ListingLens demonstrates that same product shape in a focused MVP:
@@ -23,11 +44,12 @@ The goal is to finish quickly enough to apply and move on, while still showing d
 | Decision | Choice | Why it helps speed | Why it still shows quality |
 | --- | --- | --- | --- |
 | Data source | Bundled JSON fixtures with an injectable mock API layer | No backend deployment, auth, database, or local server setup | Still uses typed clients, DTO decoding, async flows, errors, retries, and repository boundaries |
-| State management | iOS 17 Observation | Less boilerplate than older ObservableObject patterns | Modern SwiftUI architecture with clear ViewModel ownership |
+| State management | Swift Observation | Less boilerplate than older ObservableObject patterns | Modern SwiftUI architecture with clear ViewModel ownership |
 | Storage | SwiftData + UserDefaults | Fast modern persistence setup | Structured cache models, timestamps, stale data metadata, and local user state |
 | Platform | iPhone-only MVP | Avoids iPad layout expansion | Lets the core host/guest flows get polished instead of stretched thin |
 | AI layer | Deterministic AI Quality Coach | No API key, cost, latency, or LLM integration risk | Recommendations remain explainable, testable, and grounded in visible evidence |
 | Networking | REST-shaped fixtures + one GraphQL-shaped quality detail query | No backend complexity | Demonstrates REST and GraphQL modeling without scope creep |
+| Testing | Swift Testing | Native WWDC24-era test syntax | Focused tests for scoring, decoding, repositories, and ViewModel state |
 
 ## Core Product Flows
 
