@@ -240,7 +240,8 @@ private extension ListingSummaryDTO {
                 communicationScore: summary.overallScore,
                 safetyScore: summary.overallScore,
                 accessibilityScore: accessibilitySummary.completenessScore,
-                reviewSentiments: []
+                reviewSentiments: [],
+                trendDirection: TrendDirection(rawValue: summary.trendDirection) ?? .insufficientData
             )
         )
     }

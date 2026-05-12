@@ -10,52 +10,42 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        TabView {
+            HostDashboardView(repository: repository)
+                .tabItem {
+                    Label("Host", systemImage: "person.crop.circle.badge.checkmark")
                 }
-                .onDelete(perform: deleteItems)
+
+            GuestTrustView(
+                repository: repository,
+                graphQLService: MockGraphQLService()
+            )
+            .tabItem {
+                Label("Guest", systemImage: "shield.checkered")
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+    private var repository: ListingRepository {
+        ListingRepository(
+            apiService: MockAPIService(),
+            modelContext: modelContext
+        )
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(
+            for: [
+                Item.self,
+                Host.self,
+                Listing.self,
+                QualityReport.self,
+                CachedListing.self
+            ],
+            inMemory: true
+        )
 }
