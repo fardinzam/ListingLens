@@ -9,14 +9,27 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    private enum Persona: String {
+        case host
+        case guest
+    }
+
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("selectedPersona") private var selectedPersona = Persona.host.rawValue
+
+    init() {
+        if ProcessInfo.processInfo.arguments.contains("--reset-selected-persona") {
+            UserDefaults.standard.removeObject(forKey: "selectedPersona")
+        }
+    }
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedPersona) {
             HostDashboardView(repository: repository)
                 .tabItem {
                     Label("Host", systemImage: "person.crop.circle.badge.checkmark")
                 }
+                .tag(Persona.host.rawValue)
 
             GuestTrustView(
                 repository: repository,
@@ -25,6 +38,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Guest", systemImage: "shield.checkered")
             }
+            .tag(Persona.guest.rawValue)
         }
         .accessibilityIdentifier("persona-tabs")
     }

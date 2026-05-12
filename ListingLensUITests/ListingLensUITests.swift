@@ -45,4 +45,43 @@ final class ListingLensUITests: XCTestCase {
 
         XCTAssertFalse(completeButton.waitForExistence(timeout: 2))
     }
+
+    @MainActor
+    func testHostReviewQualityDetailsOpensDetailAfterRecommendationsComplete() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--reset-selected-persona"]
+        app.launch()
+
+        XCTAssertTrue(app.scrollViews["host-dashboard"].waitForExistence(timeout: 5))
+
+        let completeButton = app.buttons["complete-recommendation-rec_checkin_photos_001"]
+        if completeButton.waitForExistence(timeout: 2) {
+            completeButton.tap()
+        }
+
+        let reviewDetailsButton = app.buttons["primary-insight-action"]
+        XCTAssertTrue(reviewDetailsButton.waitForExistence(timeout: 5))
+        XCTAssertEqual(reviewDetailsButton.label, "Review quality details")
+
+        reviewDetailsButton.tap()
+
+        XCTAssertTrue(app.scrollViews["quality-report-detail"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testSelectedPersonaPersistsAcrossLaunches() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--reset-selected-persona"]
+        app.launch()
+
+        XCTAssertTrue(app.scrollViews["host-dashboard"].waitForExistence(timeout: 5))
+        app.tabBars.buttons["Guest"].tap()
+        XCTAssertTrue(app.scrollViews["guest-trust"].waitForExistence(timeout: 5))
+
+        app.terminate()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.scrollViews["guest-trust"].waitForExistence(timeout: 5))
+    }
 }
