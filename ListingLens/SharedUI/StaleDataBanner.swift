@@ -16,5 +16,6 @@ struct StaleDataBanner: View {
             .padding(.vertical, 8)
             .background(.thinMaterial, in: Capsule())
             .accessibilityLabel("Showing cached data while syncing the latest information")
+            .accessibilityIdentifier("stale-data-banner")
     }
 }

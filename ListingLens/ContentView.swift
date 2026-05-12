@@ -26,13 +26,18 @@ struct ContentView: View {
                 Label("Guest", systemImage: "shield.checkered")
             }
         }
+        .accessibilityIdentifier("persona-tabs")
     }
 
     private var repository: ListingRepository {
         ListingRepository(
-            apiService: MockAPIService(),
+            apiService: MockAPIService(latencyNanoseconds: apiLatencyNanoseconds),
             modelContext: modelContext
         )
+    }
+
+    private var apiLatencyNanoseconds: UInt64 {
+        ProcessInfo.processInfo.arguments.contains("--ui-testing") ? 0 : 1_000_000_000
     }
 }
 

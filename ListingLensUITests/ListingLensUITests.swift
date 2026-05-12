@@ -10,32 +10,39 @@ import XCTest
 final class ListingLensUITests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // Set required initial state, such as interface orientation, before each UI test runs.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testMainDemoPathShowsHostGuestAndQualityReport() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        XCTAssertTrue(app.scrollViews["host-dashboard"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Bright Mission Studio Near Transit"].exists)
+
+        app.tabBars.buttons["Guest"].tap()
+        XCTAssertTrue(app.scrollViews["guest-trust"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Reliability Indicators"].exists)
+
+        app.buttons["view-full-quality-report"].tap()
+        XCTAssertTrue(app.scrollViews["quality-report-detail"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Risk and Positive Signals"].exists)
     }
 
     @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+    func testRecommendationCompletionUpdatesHostDashboard() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.scrollViews["host-dashboard"].waitForExistence(timeout: 5))
+
+        let completeButton = app.buttons["complete-recommendation-rec_checkin_photos_001"]
+        XCTAssertTrue(completeButton.exists)
+        completeButton.tap()
+
+        XCTAssertFalse(completeButton.waitForExistence(timeout: 2))
     }
 }

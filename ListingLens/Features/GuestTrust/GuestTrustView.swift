@@ -96,9 +96,11 @@ private extension GuestTrustView {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .accessibilityIdentifier("view-full-quality-report")
             }
             .padding(20)
         }
+        .accessibilityIdentifier("guest-trust")
         .background(Color(.systemGroupedBackground))
         .refreshable {
             viewModel.load()

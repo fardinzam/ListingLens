@@ -68,6 +68,7 @@ struct QualityReportDetailView: View {
             }
             .padding(20)
         }
+        .accessibilityIdentifier("quality-report-detail")
         .background(Color(.systemGroupedBackground))
     }
 
