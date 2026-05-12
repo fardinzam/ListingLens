@@ -2,4 +2,7 @@ ListingLens_conversation.md
 
 .DS_Store
 .derivedData/
+DerivedData/
+build/
+*.xcresult
 xcuserdata/

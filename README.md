@@ -60,7 +60,7 @@ The goal is to finish quickly enough to apply and move on, while still showing d
 | --- | --- | --- | --- |
 | Data source | Bundled JSON fixtures with an injectable mock API layer | No backend deployment, auth, database, or local server setup | Still uses typed clients, DTO decoding, async flows, errors, retries, and repository boundaries |
 | State management | Swift Observation | Less boilerplate than older ObservableObject patterns | Modern SwiftUI architecture with clear ViewModel ownership |
-| Storage | SwiftData + UserDefaults | Fast modern persistence setup | Structured cache models, timestamps, stale data metadata, and local user state |
+| Storage | SwiftData + UserDefaults via `@AppStorage` | Fast modern persistence setup | Structured cache models, timestamps, stale data metadata, saved recommendation state, and restored persona selection |
 | Platform | iPhone-only MVP | Avoids iPad layout expansion | Lets the core host/guest flows get polished instead of stretched thin |
 | AI layer | Deterministic AI Quality Coach | No API key, cost, latency, or LLM integration risk | Recommendations remain explainable, testable, and grounded in visible evidence |
 | Networking | REST-shaped fixtures + one GraphQL-shaped quality detail query | No backend complexity | Demonstrates REST and GraphQL modeling without scope creep |
@@ -74,7 +74,8 @@ The goal is to finish quickly enough to apply and move on, while still showing d
 - Primary insight derived from the highest-priority risk or recommendation.
 - Top risk signal and primary recommended action on the first screen.
 - Drill-down sections for review themes, positive signals, risk signals, and score breakdowns.
-- AI Quality Coach suggestions with evidence, expected impact, confidence, and claim type.
+- Deterministic AI Quality Coach suggestions with evidence, expected impact, confidence, and claim type.
+- Recommendation state is local and predictable: hosts can complete actions, SwiftData persists the result, and refreshed fixture data is merged without overwriting local completion state.
 
 ### Guest Trust View
 
@@ -176,7 +177,7 @@ This pattern demonstrates offline support, async programming, local persistence,
 - MVP scoring weights are heuristic and documented; production weights would require calibration against real outcome data.
 - The app does not perform enforcement, marketplace ranking, identity verification, fraud detection, or booking decisions.
 
-## Documentation
+## Product Thinking Artifacts (`/docs`)
 
 - [PRD](docs/listinglens-prd.md): product goals, personas, scope, user stories, metrics, and risks.
 - [Architecture](docs/listinglens-architecture.md): system overview, SwiftData strategy, stale-while-refresh, async networking, and testing plan.
