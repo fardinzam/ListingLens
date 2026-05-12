@@ -16,6 +16,8 @@ struct ListingRepositoryTests {
     @Test func staleWhileRefreshYieldsCachedListingsThenFreshListings() async throws {
         let container = try ModelContainer(
             for: CachedListing.self,
+            CachedQualityReport.self,
+            CachedRecommendationState.self,
             Host.self,
             Listing.self,
             QualityReport.self,
@@ -61,6 +63,8 @@ struct ListingRepositoryTests {
     @Test func staleWhileRefreshYieldsEmptyCacheBeforeFreshListings() async throws {
         let container = try ModelContainer(
             for: CachedListing.self,
+            CachedQualityReport.self,
+            CachedRecommendationState.self,
             Host.self,
             Listing.self,
             QualityReport.self,
@@ -84,5 +88,71 @@ struct ListingRepositoryTests {
         #expect(snapshots[0].value.isEmpty)
         #expect(snapshots[1].source == .network)
         #expect(!snapshots[1].value.isEmpty)
+    }
+
+    @MainActor
+    @Test func listingCacheOnlyReturnsCachedQualityReportAfterRefresh() async throws {
+        let container = try Self.makeContainer()
+        let refreshRepository = ListingRepository(
+            apiService: MockAPIService(latencyNanoseconds: 0),
+            modelContext: container.mainContext
+        )
+
+        for try await snapshot in refreshRepository.listing(id: "stay_1001", policy: .refresh) {
+            #expect(snapshot.value.qualityReport?.overallScore == 84)
+        }
+
+        let cacheOnlyRepository = ListingRepository(
+            apiService: MockAPIService(latencyNanoseconds: 0),
+            modelContext: container.mainContext
+        )
+
+        var cachedSnapshots: [DataSnapshot<Listing>] = []
+        for try await snapshot in cacheOnlyRepository.listing(id: "stay_1001", policy: .cacheOnly) {
+            cachedSnapshots.append(snapshot)
+        }
+
+        #expect(cachedSnapshots.count == 1)
+        #expect(cachedSnapshots[0].source == .cache)
+        #expect(cachedSnapshots[0].value.qualityReport?.overallScore == 84)
+        #expect(cachedSnapshots[0].value.qualityReport?.riskSignals.first?.id == "sig_checkin_001")
+    }
+
+    @MainActor
+    @Test func completedRecommendationStateSurvivesFreshRefresh() async throws {
+        let container = try Self.makeContainer()
+        let repository = ListingRepository(
+            apiService: MockAPIService(latencyNanoseconds: 0),
+            modelContext: container.mainContext
+        )
+
+        for try await _ in repository.listing(id: "stay_1001", policy: .refresh) {}
+        try await repository.completeRecommendation(id: "rec_checkin_photos_001")
+
+        var refreshedSnapshots: [DataSnapshot<Listing>] = []
+        for try await snapshot in repository.listing(id: "stay_1001", policy: .refresh) {
+            refreshedSnapshots.append(snapshot)
+        }
+
+        let recommendation = refreshedSnapshots
+            .last?
+            .value
+            .qualityReport?
+            .recommendations
+            .first { $0.id == "rec_checkin_photos_001" }
+
+        #expect(recommendation?.status == .completed)
+    }
+
+    private static func makeContainer() throws -> ModelContainer {
+        try ModelContainer(
+            for: CachedListing.self,
+            CachedQualityReport.self,
+            CachedRecommendationState.self,
+            Host.self,
+            Listing.self,
+            QualityReport.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
     }
 }

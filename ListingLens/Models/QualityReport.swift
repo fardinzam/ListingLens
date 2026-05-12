@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class QualityReport: Decodable {
+final class QualityReport: Codable {
     var overallScore: Int
     var cleanlinessScore: Int
     var accuracyScore: Int
@@ -98,6 +98,22 @@ final class QualityReport: Decodable {
             trendDirection: trendDirection,
             accessibilityFeatures: accessibilityFeatures
         )
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(overallScore, forKey: .overallScore)
+        try container.encode(cleanlinessScore, forKey: .cleanlinessScore)
+        try container.encode(accuracyScore, forKey: .accuracyScore)
+        try container.encode(communicationScore, forKey: .communicationScore)
+        try container.encode(safetyScore, forKey: .safetyScore)
+        try container.encode(accessibilityScore, forKey: .accessibilityScore)
+        try container.encode(reviewSentiments, forKey: .reviewSentiments)
+        try container.encode(riskSignals, forKey: .riskSignals)
+        try container.encode(positiveSignals, forKey: .positiveSignals)
+        try container.encode(recommendations, forKey: .recommendations)
+        try container.encode(trendDirection, forKey: .trendDirection)
+        try container.encode(accessibilityFeatures, forKey: .accessibilityFeatures)
     }
 }
 

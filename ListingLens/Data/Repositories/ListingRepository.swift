@@ -38,10 +38,14 @@ protocol ListingRepositoryProtocol {
 final class ListingRepository: ListingRepositoryProtocol {
     private let apiService: MockAPIService
     private let modelContext: ModelContext
+    private let qualityReportEncoder: JSONEncoder
+    private let qualityReportDecoder: JSONDecoder
 
     init(apiService: MockAPIService, modelContext: ModelContext) {
         self.apiService = apiService
         self.modelContext = modelContext
+        self.qualityReportEncoder = JSONEncoder()
+        self.qualityReportDecoder = JSONDecoder()
     }
 
     func listings(policy: FetchPolicy) -> AsyncThrowingStream<DataSnapshot<[Listing]>, Error> {
@@ -153,6 +157,8 @@ final class ListingRepository: ListingRepositoryProtocol {
                         if let listing = snapshot.value.first(where: { $0.id == id }) {
                             if snapshot.source == .network {
                                 listing.qualityReport = try await fetchQualityReport(for: id)
+                            } else {
+                                listing.qualityReport = try cachedQualityReport(for: id)
                             }
 
                             continuation.yield(
@@ -180,11 +186,28 @@ final class ListingRepository: ListingRepositoryProtocol {
     }
 
     func completeRecommendation(id: String) async throws {
-        // Recommendation mutations are local-only for the MVP. The ViewModel
-        // updates the visible state optimistically while this repository method
-        // preserves the future API boundary for persisted mutation handling.
-    }
+        let listingID = try listingID(forRecommendation: id)
+        let now = Date()
 
+        if let cachedState = try cachedRecommendationState(for: id) {
+            cachedState.status = .completed
+            cachedState.updatedAt = now
+        } else {
+            modelContext.insert(
+                CachedRecommendationState(
+                    recommendationID: id,
+                    listingID: listingID,
+                    status: .completed,
+                    updatedAt: now
+                )
+            )
+        }
+
+        try modelContext.save()
+    }
+}
+
+private extension ListingRepository {
     private func fetchCachedListings() throws -> [CachedListing] {
         let descriptor = FetchDescriptor<CachedListing>(
             sortBy: [SortDescriptor(\.title)]
@@ -216,8 +239,116 @@ final class ListingRepository: ListingRepositoryProtocol {
         let response: ListingQualityReportResponseDTO = try await apiService.fetch(
             endpoint: "/v1/listings/\(listingID)/quality-report"
         )
-        return response.data.qualityReport.toDomainModel()
+        let report = try mergeLocalRecommendationState(
+            into: response.data.qualityReport.toDomainModel(),
+            listingID: listingID
+        )
+        try upsertCachedQualityReport(
+            report,
+            listingID: listingID,
+            fetchedAt: response.meta.generatedAt
+        )
+        return report
     }
+
+    private func cachedQualityReport(for listingID: Listing.ID) throws -> QualityReport? {
+        guard let cachedReport = try fetchCachedQualityReport(for: listingID),
+              cachedReport.schemaVersion == CachedQualityReport.currentSchemaVersion else {
+            return nil
+        }
+
+        let report = try cachedReport.toDomainModel(decoder: qualityReportDecoder)
+        return try mergeLocalRecommendationState(into: report, listingID: listingID)
+    }
+
+    private func fetchCachedQualityReport(for listingID: Listing.ID) throws -> CachedQualityReport? {
+        var descriptor = FetchDescriptor<CachedQualityReport>(
+            predicate: #Predicate { $0.listingID == listingID }
+        )
+        descriptor.fetchLimit = 1
+        return try modelContext.fetch(descriptor).first
+    }
+
+    private func upsertCachedQualityReport(
+        _ report: QualityReport,
+        listingID: Listing.ID,
+        fetchedAt: Date
+    ) throws {
+        let payload = try qualityReportEncoder.encode(report)
+        let expiresAt = fetchedAt.addingTimeInterval(30 * 60)
+
+        if let cachedReport = try fetchCachedQualityReport(for: listingID) {
+            cachedReport.update(payload: payload, fetchedAt: fetchedAt, expiresAt: expiresAt)
+        } else {
+            modelContext.insert(
+                CachedQualityReport(
+                    listingID: listingID,
+                    payload: payload,
+                    fetchedAt: fetchedAt,
+                    expiresAt: expiresAt
+                )
+            )
+        }
+
+        try modelContext.save()
+    }
+
+    private func mergeLocalRecommendationState(
+        into report: QualityReport,
+        listingID: Listing.ID
+    ) throws -> QualityReport {
+        let states = try fetchCachedRecommendationStates(for: listingID)
+        guard !states.isEmpty else {
+            return report
+        }
+
+        let statusByID = Dictionary(uniqueKeysWithValues: states.map { ($0.recommendationID, $0.status) })
+        report.recommendations = report.recommendations.map { recommendation in
+            var mergedRecommendation = recommendation
+            if let localStatus = statusByID[recommendation.id] {
+                mergedRecommendation.status = localStatus
+            }
+            return mergedRecommendation
+        }
+        return report
+    }
+
+    private func fetchCachedRecommendationStates(for listingID: Listing.ID) throws -> [CachedRecommendationState] {
+        let descriptor = FetchDescriptor<CachedRecommendationState>(
+            predicate: #Predicate { $0.listingID == listingID }
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
+    private func cachedRecommendationState(
+        for recommendationID: Recommendation.ID
+    ) throws -> CachedRecommendationState? {
+        var descriptor = FetchDescriptor<CachedRecommendationState>(
+            predicate: #Predicate { $0.recommendationID == recommendationID }
+        )
+        descriptor.fetchLimit = 1
+        return try modelContext.fetch(descriptor).first
+    }
+
+    private func listingID(forRecommendation recommendationID: Recommendation.ID) throws -> Listing.ID {
+        if let cachedState = try cachedRecommendationState(for: recommendationID) {
+            return cachedState.listingID
+        }
+
+        let reports = try modelContext.fetch(FetchDescriptor<CachedQualityReport>())
+        for cachedReport in reports where cachedReport.schemaVersion == CachedQualityReport.currentSchemaVersion {
+            let report = try cachedReport.toDomainModel(decoder: qualityReportDecoder)
+            if report.recommendations.contains(where: { $0.id == recommendationID }) {
+                return cachedReport.listingID
+            }
+        }
+
+        throw ListingRepositoryError.recommendationNotFound(recommendationID)
+    }
+}
+
+enum ListingRepositoryError: Error, Equatable {
+    case recommendationNotFound(String)
 }
 
 private extension ListingSummaryDTO {
