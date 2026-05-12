@@ -85,12 +85,13 @@ struct HostDashboardView: View {
                     }
                 }
 
-                recommendationsSection(data.qualityReport.recommendations)
+                recommendationsSection(openRecommendations(in: data))
                 scoreBreakdownSection(data.qualityReport)
                 reviewThemesSection(data.qualityReport.reviewSentiments)
             }
             .padding(20)
         }
+        .accessibilityIdentifier("host-dashboard")
         .background(Color(.systemGroupedBackground))
         .refreshable {
             viewModel.load()
@@ -132,12 +133,11 @@ struct HostDashboardView: View {
                 VStack(spacing: 12) {
                     ForEach(recommendations) { recommendation in
                         RecommendationCard(recommendation: recommendation) {
-                            Task {
-                                await viewModel.completeRecommendation(id: recommendation.id)
-                            }
+                            recommendationCompletionStarted(id: recommendation.id)
                         }
                     }
                 }
+                .animation(.snappy, value: recommendations)
             }
         }
     }
@@ -219,15 +219,25 @@ struct HostDashboardView: View {
     }
 
     private func primaryActionTitle(for data: HostDashboardData) -> String {
-        data.qualityReport.recommendations.first?.title ?? "Review quality details"
+        openRecommendations(in: data).first?.title ?? "Review quality details"
     }
 
     private func completePrimaryRecommendation(in data: HostDashboardData) async {
-        guard let recommendation = data.qualityReport.recommendations.first else {
+        guard let recommendation = openRecommendations(in: data).first else {
             return
         }
 
         await viewModel.completeRecommendation(id: recommendation.id)
+    }
+
+    private func openRecommendations(in data: HostDashboardData) -> [Recommendation] {
+        data.qualityReport.recommendations.filter { $0.status != .completed }
+    }
+
+    private func recommendationCompletionStarted(id: String) {
+        Task {
+            await viewModel.completeRecommendation(id: id)
+        }
     }
 
     private func icon(for polarity: SentimentPolarity) -> String {

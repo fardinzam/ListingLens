@@ -37,12 +37,17 @@ struct RecommendationCard: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            Button(action: complete) {
+            Button {
+                withAnimation(.snappy) {
+                    complete()
+                }
+            } label: {
                 Label("Complete", systemImage: "checkmark.circle")
                     .font(.subheadline.weight(.semibold))
             }
             .buttonStyle(.bordered)
             .disabled(recommendation.status == .completed)
+            .accessibilityIdentifier("complete-recommendation-\(recommendation.id)")
         }
         .padding(16)
         .background(.background, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
