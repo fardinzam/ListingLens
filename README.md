@@ -1,6 +1,13 @@
 # ListingLens
 
 [![CI](https://github.com/fardinzam/ListingLens/actions/workflows/ci.yml/badge.svg)](https://github.com/fardinzam/ListingLens/actions/workflows/ci.yml)
+![Swift](https://img.shields.io/badge/Swift-5-orange)
+![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-blue)
+![SwiftData](https://img.shields.io/badge/Persistence-SwiftData-purple)
+![Swift Testing](https://img.shields.io/badge/Tests-Swift%20Testing-green)
+![SwiftLint](https://img.shields.io/badge/Style-SwiftLint-informational)
+![Platform](https://img.shields.io/badge/Platform-iOS%2017%2B-lightgrey)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM-black)
 
 ListingLens is an iPhone-first SwiftUI portfolio project for stay-quality, host reputation, and guest trust insights. It models a simplified Quality Reputation product: collect listing, review, reliability, accessibility, and support signals; turn them into explainable quality reports; then help hosts take the next best action while giving guests a clearer trust summary.
 
@@ -17,6 +24,14 @@ The project is designed for the Airbnb Software Engineer, New Grad role on a Qua
 - GitHub Actions CI runs SwiftLint plus Xcode build/test on macOS.
 
 Design reference: [ListingLens Figma component and screen file](https://www.figma.com/design/Zlo4IFwAXEm4W94z1HyRCf/ListingLens-Shared-UI-Components?node-id=0-1&t=srHFpb4e3CbVgGmz-1)
+
+## App Preview
+
+These previews are Figma-rendered views of the implemented app screens. They are included here because the dashboard pages are taller than a single simulator viewport, while the live app remains the source of truth for behavior.
+
+| Host Dashboard | Guest Trust | Quality Report Detail |
+| --- | --- | --- |
+| ![Host Dashboard preview](docs/assets/app-preview-host-dashboard.png) | ![Guest Trust preview](docs/assets/app-preview-guest-trust.png) | ![Quality Report Detail preview](docs/assets/app-preview-quality-report-detail.png) |
 
 ## Quick Start
 
