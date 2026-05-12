@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "quality_report_not_found",
+    "message": "No quality report exists for listing stay_missing.",
+    "details": {
+      "listingId": "stay_missing"
+    },
+    "requestId": "mock_req_404_quality_report",
+    "retryable": false
+  }
+}

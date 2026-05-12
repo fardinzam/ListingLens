@@ -11,28 +11,39 @@ final class MockAPIService {
     private let bundle: Bundle
     private let decoder: JSONDecoder
     private let latencyNanoseconds: UInt64
+    private let fixtureOverrides: [String: String]
 
     init(
         bundle: Bundle = .main,
         decoder: JSONDecoder = JSONDecoder(),
-        latencyNanoseconds: UInt64 = 1_000_000_000
+        latencyNanoseconds: UInt64 = 1_000_000_000,
+        fixtureOverrides: [String: String] = [:]
     ) {
         self.bundle = bundle
         self.decoder = decoder
         self.decoder.dateDecodingStrategy = .iso8601
         self.latencyNanoseconds = latencyNanoseconds
+        self.fixtureOverrides = fixtureOverrides
     }
 
     func fetch<T: Decodable>(endpoint: String) async throws -> T {
         try await Task.sleep(nanoseconds: latencyNanoseconds)
 
-        let resourceName = resourceName(for: endpoint)
-        guard let url = fixtureURL(for: resourceName) else {
+        let resourceName = fixtureOverrides[endpoint] ?? resourceName(for: endpoint)
+        guard let fixture = fixture(for: resourceName) else {
             throw MockAPIServiceError.fixtureNotFound(endpoint: endpoint, resourceName: resourceName)
         }
 
         do {
-            let data = try Data(contentsOf: url)
+            let data = try Data(contentsOf: fixture.url)
+            if let errorResponse = try? decoder.decode(APIErrorResponseDTO.self, from: data) {
+                throw MockAPIServiceError.apiError(
+                    statusCode: statusCode(for: fixture.resourceName),
+                    code: errorResponse.error.code,
+                    message: errorResponse.error.message,
+                    requestId: errorResponse.error.requestId
+                )
+            }
             return try decoder.decode(T.self, from: data)
         } catch let error as DecodingError {
             throw MockAPIServiceError.decodingFailed(endpoint: endpoint, underlying: error)
@@ -43,10 +54,27 @@ final class MockAPIService {
         }
     }
 
+    private func fixture(for resourceName: String) -> (url: URL, resourceName: String)? {
+        for candidate in [resourceName, "\(resourceName).404"] {
+            if let url = fixtureURL(for: candidate) {
+                return (url, candidate)
+            }
+        }
+
+        return nil
+    }
+
     private func fixtureURL(for resourceName: String) -> URL? {
         bundle.url(forResource: resourceName, withExtension: "json", subdirectory: "Resources/MockAPI") ??
             bundle.url(forResource: resourceName, withExtension: "json", subdirectory: "MockAPI") ??
             bundle.url(forResource: resourceName, withExtension: "json")
+    }
+
+    private func statusCode(for resourceName: String) -> Int {
+        resourceName
+            .split(separator: ".")
+            .compactMap { Int($0) }
+            .first { 100..<600 ~= $0 } ?? 500
     }
 
     private func resourceName(for endpoint: String) -> String {
@@ -83,6 +111,7 @@ final class MockAPIService {
 
 enum MockAPIServiceError: Error, Equatable {
     case fixtureNotFound(endpoint: String, resourceName: String)
+    case apiError(statusCode: Int, code: String, message: String, requestId: String?)
     case loadingFailed(endpoint: String, underlyingDescription: String)
     case decodingFailed(endpoint: String, underlyingDescription: String)
 

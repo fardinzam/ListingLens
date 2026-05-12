@@ -46,4 +46,62 @@ struct MockAPIServiceTests {
             let _: ListingIndexResponseDTO = try await service.fetch(endpoint: "/v1/unknown")
         }
     }
+
+    @MainActor
+    @Test func fetchDecodesQualityReport404FixtureAsAPIError() async {
+        let service = MockAPIService(latencyNanoseconds: 0)
+
+        await #expect(throws: MockAPIServiceError.apiError(
+            statusCode: 404,
+            code: "quality_report_not_found",
+            message: "No quality report exists for listing stay_missing.",
+            requestId: "mock_req_404_quality_report"
+        )) {
+            let _: ListingQualityReportResponseDTO = try await service.fetch(
+                endpoint: "/v1/listings/stay_missing/quality-report"
+            )
+        }
+    }
+
+    @MainActor
+    @Test func fetchCanForceQualityReport500FixtureAsAPIError() async {
+        let service = MockAPIService(
+            latencyNanoseconds: 0,
+            fixtureOverrides: [
+                "/v1/listings/stay_1001/quality-report": "listings.stay_1001.quality_report.500"
+            ]
+        )
+
+        await #expect(throws: MockAPIServiceError.apiError(
+            statusCode: 500,
+            code: "quality_report_refresh_failed",
+            message: "The mock quality report service failed while refreshing listing stay_1001.",
+            requestId: "mock_req_500_quality_report"
+        )) {
+            let _: ListingQualityReportResponseDTO = try await service.fetch(
+                endpoint: "/v1/listings/stay_1001/quality-report"
+            )
+        }
+    }
+
+    @MainActor
+    @Test func fetchCanForceRecommendation500FixtureAsAPIError() async {
+        let service = MockAPIService(
+            latencyNanoseconds: 0,
+            fixtureOverrides: [
+                "/v1/recommendations/interventions": "recommendations.interventions.500"
+            ]
+        )
+
+        await #expect(throws: MockAPIServiceError.apiError(
+            statusCode: 500,
+            code: "recommendation_engine_failure",
+            message: "The mock recommendation engine failed while generating interventions.",
+            requestId: "mock_req_500_recommendation"
+        )) {
+            let _: ListingQualityReportResponseDTO = try await service.fetch(
+                endpoint: "/v1/recommendations/interventions"
+            )
+        }
+    }
 }

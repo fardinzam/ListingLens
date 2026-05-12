@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "recommendation_engine_failure",
+    "message": "The mock recommendation engine failed while generating interventions.",
+    "details": {
+      "listingId": "stay_1001",
+      "failedStage": "evidence_to_intervention_ranking",
+      "fallbackBehavior": "show_cached_recommendations_if_available"
+    },
+    "requestId": "mock_req_500_recommendation",
+    "retryable": true
+  }
+}

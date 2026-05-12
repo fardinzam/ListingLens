@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "quality_report_refresh_failed",
+    "message": "The mock quality report service failed while refreshing listing stay_1001.",
+    "details": {
+      "listingId": "stay_1001",
+      "failedStage": "quality_report_refresh",
+      "fallbackBehavior": "show_cached_quality_report_if_available"
+    },
+    "requestId": "mock_req_500_quality_report",
+    "retryable": true
+  }
+}
