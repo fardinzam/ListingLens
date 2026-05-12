@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HostDashboardView: View {
     @State private var viewModel: HostDashboardViewModel
+    @State private var isShowingQualityReportDetails = false
 
     init(viewModel: HostDashboardViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -78,7 +79,8 @@ struct HostDashboardView: View {
 
                 InsightCard(
                     insight: data.primaryInsight,
-                    actionTitle: primaryActionTitle(for: data)
+                    actionTitle: primaryActionTitle(for: data),
+                    actionSystemImage: primaryActionSystemImage(for: data)
                 ) {
                     Task {
                         await completePrimaryRecommendation(in: data)
@@ -101,6 +103,14 @@ struct HostDashboardView: View {
                 StaleDataBanner()
                     .padding(.bottom, 8)
             }
+        }
+        .navigationDestination(isPresented: $isShowingQualityReportDetails) {
+            QualityReportDetailView(
+                viewModel: QualityReportDetailViewModel(
+                    listingID: data.listing.id,
+                    graphQLService: MockGraphQLService(latencyNanoseconds: apiLatencyNanoseconds)
+                )
+            )
         }
     }
 
@@ -222,8 +232,13 @@ struct HostDashboardView: View {
         openRecommendations(in: data).first?.title ?? "Review quality details"
     }
 
+    private func primaryActionSystemImage(for data: HostDashboardData) -> String {
+        openRecommendations(in: data).isEmpty ? "doc.text.magnifyingglass" : "checkmark.circle.fill"
+    }
+
     private func completePrimaryRecommendation(in data: HostDashboardData) async {
         guard let recommendation = openRecommendations(in: data).first else {
+            isShowingQualityReportDetails = true
             return
         }
 
@@ -272,4 +287,9 @@ struct HostDashboardView: View {
             .red
         }
     }
+
+}
+
+private var apiLatencyNanoseconds: UInt64 {
+    ProcessInfo.processInfo.arguments.contains("--ui-testing") ? 0 : 1_000_000_000
 }

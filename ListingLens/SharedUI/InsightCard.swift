@@ -10,7 +10,20 @@ import SwiftUI
 struct InsightCard: View {
     let insight: PrimaryInsight?
     let actionTitle: String
+    let actionSystemImage: String
     let action: () -> Void
+
+    init(
+        insight: PrimaryInsight?,
+        actionTitle: String,
+        actionSystemImage: String = "checkmark.circle.fill",
+        action: @escaping () -> Void
+    ) {
+        self.insight = insight
+        self.actionTitle = actionTitle
+        self.actionSystemImage = actionSystemImage
+        self.action = action
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -37,10 +50,11 @@ struct InsightCard: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(action: action) {
-                Label(actionTitle, systemImage: "checkmark.circle.fill")
+                Label(actionTitle, systemImage: actionSystemImage)
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity)
             }
+            .accessibilityIdentifier("primary-insight-action")
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
         }
