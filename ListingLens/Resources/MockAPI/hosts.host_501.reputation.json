@@ -1,0 +1,68 @@
+{
+  "data": {
+    "host": {
+      "id": "host_501",
+      "displayName": "Maya",
+      "joinedAt": "2021-08-14T00:00:00Z",
+      "activeListingIds": ["stay_1001", "stay_1010"]
+    },
+    "reputation": {
+      "overallScore": 89,
+      "confidenceLevel": "high",
+      "dataCompleteness": 0.91,
+      "claimType": "inferred",
+      "summary": "Strong response and cancellation history, with recent check-in clarity issues isolated to one listing.",
+      "metrics": {
+        "medianResponseTimeMinutes": 42,
+        "responseRate": 0.98,
+        "hostInitiatedCancellationRate": 0.0,
+        "resolvedIssueRate": 0.86,
+        "averageRating": 4.84,
+        "reviewCount": 126
+      },
+      "history": [
+        {
+          "period": "2026-03",
+          "overallScore": 91,
+          "guestReportedIssueCount": 2,
+          "hostInitiatedCancellations": 0
+        },
+        {
+          "period": "2026-04",
+          "overallScore": 88,
+          "guestReportedIssueCount": 5,
+          "hostInitiatedCancellations": 0
+        },
+        {
+          "period": "2026-05",
+          "overallScore": 89,
+          "guestReportedIssueCount": 3,
+          "hostInitiatedCancellations": 0
+        }
+      ],
+      "positiveSignals": [
+        {
+          "id": "host_sig_response_001",
+          "category": "communication",
+          "title": "Fast median response time",
+          "explanation": "Median response time is 42 minutes over the last 90 days.",
+          "claimType": "verified"
+        }
+      ],
+      "riskSignals": [
+        {
+          "id": "host_sig_checkin_001",
+          "category": "checkInReliability",
+          "title": "Check-in issues concentrated on one listing",
+          "explanation": "Recent check-in reports are tied to stay_1001 rather than all host listings.",
+          "severity": "medium",
+          "claimType": "guestReported"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "fixtureName": "hosts.host_501.reputation.json",
+    "fetchedAt": "2026-05-10T19:00:00Z"
+  }
+}

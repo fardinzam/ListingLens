@@ -1,0 +1,72 @@
+{
+  "data": {
+    "listingId": "stay_1001",
+    "action": "suggest",
+    "recommendations": [
+      {
+        "id": "rec_checkin_photos_001",
+        "listingId": "stay_1001",
+        "title": "Add photo-based arrival instructions",
+        "hostAction": "Upload three photos showing the entrance, lockbox location, and door code sequence.",
+        "expectedImpact": "Reduce guest-reported check-in issues.",
+        "confidenceLevel": "high",
+        "claimType": "inferred",
+        "status": "suggested",
+        "priorityScore": 94,
+        "rankingFactors": {
+          "severity": "high",
+          "frequency": 4,
+          "recencyDays": 2,
+          "expectedImpact": "high"
+        },
+        "evidenceSignalIds": ["sig_checkin_001", "theme_checkin_lockbox"],
+        "evidence": [
+          {
+            "id": "sig_checkin_001",
+            "type": "qualitySignal",
+            "summary": "Four check-in complaints in the last 30 days mention lockbox location."
+          },
+          {
+            "id": "theme_checkin_lockbox",
+            "type": "reviewTheme",
+            "summary": "Guests mention difficulty finding the entrance after dark."
+          }
+        ],
+        "createdAt": "2026-05-10T19:00:00Z",
+        "updatedAt": "2026-05-10T19:00:00Z"
+      },
+      {
+        "id": "rec_accessibility_measurements_001",
+        "listingId": "stay_1001",
+        "title": "Add doorway width measurements",
+        "hostAction": "Measure and add bedroom, bathroom, and entry doorway widths.",
+        "expectedImpact": "Improve accessibility information completeness.",
+        "confidenceLevel": "medium",
+        "claimType": "inferred",
+        "status": "suggested",
+        "priorityScore": 71,
+        "rankingFactors": {
+          "severity": "medium",
+          "frequency": 1,
+          "recencyDays": 15,
+          "expectedImpact": "medium"
+        },
+        "evidenceSignalIds": ["access_missing_wide_doorway_measurements"],
+        "evidence": [
+          {
+            "id": "access_missing_wide_doorway_measurements",
+            "type": "accessibilityFieldGap",
+            "summary": "Wide doorway measurements are missing from host-provided accessibility details."
+          }
+        ],
+        "createdAt": "2026-05-10T19:00:00Z",
+        "updatedAt": "2026-05-10T19:00:00Z"
+      }
+    ]
+  },
+  "meta": {
+    "fixtureName": "recommendations.interventions.suggest.success.json",
+    "requestId": "mock_req_recommend_suggest",
+    "fetchedAt": "2026-05-10T19:00:00Z"
+  }
+}

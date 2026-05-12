@@ -39,6 +39,70 @@ struct MockAPIServiceTests {
     }
 
     @MainActor
+    @Test func fetchDecodesHostReputationFixture() async throws {
+        let service = MockAPIService(latencyNanoseconds: 0)
+
+        let response: HostReputationResponseDTO = try await service.fetch(
+            endpoint: "/v1/hosts/host_501/reputation"
+        )
+
+        #expect(response.data.host.displayName == "Maya")
+        #expect(response.data.reputation.metrics.responseRate == 0.98)
+        #expect(response.data.reputation.riskSignals.first?.claimType == "guestReported")
+        #expect(response.meta.fixtureName == "hosts.host_501.reputation.json")
+    }
+
+    @MainActor
+    @Test func fetchDecodesRecommendationSuggestFixture() async throws {
+        let service = MockAPIService(latencyNanoseconds: 0)
+
+        let response: RecommendationInterventionResponseDTO = try await service.fetch(
+            endpoint: "/v1/recommendations/interventions"
+        )
+
+        #expect(response.data.action == "suggest")
+        #expect(response.data.recommendations?.count == 2)
+        #expect(response.data.recommendations?.first?.id == "rec_checkin_photos_001")
+    }
+
+    @MainActor
+    @Test func fetchCanForceRecommendationDismissFixture() async throws {
+        let service = MockAPIService(
+            latencyNanoseconds: 0,
+            fixtureOverrides: [
+                "/v1/recommendations/interventions": "recommendations.interventions.dismiss.success"
+            ]
+        )
+
+        let response: RecommendationInterventionResponseDTO = try await service.fetch(
+            endpoint: "/v1/recommendations/interventions"
+        )
+
+        #expect(response.data.action == "dismiss")
+        #expect(response.data.recommendation?.status == .dismissed)
+        #expect(response.data.recommendation?.id == "rec_checkin_photos_001")
+    }
+
+    @MainActor
+    @Test func fetchCanForceInvalidSignalPayloadFixtureAsAPIError() async {
+        let service = MockAPIService(
+            latencyNanoseconds: 0,
+            fixtureOverrides: [
+                "/v1/quality/signals": "errors.invalid_signal_payload"
+            ]
+        )
+
+        await #expect(throws: MockAPIServiceError.apiError(
+            statusCode: 422,
+            code: "invalid_signal_payload",
+            message: "Signal payload is missing required fields.",
+            requestId: "mock_req_422_create_signal"
+        )) {
+            let _: APIErrorResponseDTO = try await service.fetch(endpoint: "/v1/quality/signals")
+        }
+    }
+
+    @MainActor
     @Test func fetchThrowsForMissingFixture() async {
         let service = MockAPIService(latencyNanoseconds: 0)
 

@@ -71,7 +71,11 @@ final class MockAPIService {
     }
 
     private func statusCode(for resourceName: String) -> Int {
-        resourceName
+        if resourceName.contains("invalid_signal_payload") {
+            return 422
+        }
+
+        return resourceName
             .split(separator: ".")
             .compactMap { Int($0) }
             .first { 100..<600 ~= $0 } ?? 500

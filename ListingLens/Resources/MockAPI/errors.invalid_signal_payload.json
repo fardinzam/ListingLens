@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "invalid_signal_payload",
+    "message": "Signal payload is missing required fields.",
+    "details": {
+      "missingFields": ["category", "severity", "description"]
+    },
+    "requestId": "mock_req_422_create_signal",
+    "retryable": false
+  }
+}

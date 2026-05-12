@@ -1,0 +1,17 @@
+{
+  "data": {
+    "listingId": "stay_1001",
+    "action": "dismiss",
+    "recommendation": {
+      "id": "rec_checkin_photos_001",
+      "status": "dismissed",
+      "dismissedAt": "2026-05-10T19:15:00Z",
+      "dismissReason": "Host already updated instructions outside the app"
+    }
+  },
+  "meta": {
+    "fixtureName": "recommendations.interventions.dismiss.success.json",
+    "requestId": "mock_req_recommend_dismiss",
+    "fetchedAt": "2026-05-10T19:15:00Z"
+  }
+}
