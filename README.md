@@ -29,9 +29,13 @@ Design reference: [ListingLens Figma component and screen file](https://www.figm
 
 These previews are Figma-rendered views of the implemented app screens. They are included here because the dashboard pages are taller than a single simulator viewport, while the live app remains the source of truth for behavior.
 
-| Host Dashboard | Guest Trust | Quality Report Detail |
-| --- | --- | --- |
-| ![Host Dashboard preview](docs/assets/app-preview-host-dashboard.png) | ![Guest Trust preview](docs/assets/app-preview-guest-trust.png) | ![Quality Report Detail preview](docs/assets/app-preview-quality-report-detail.png) |
+| Host Dashboard | Host Completed State |
+| --- | --- |
+| ![Host Dashboard preview](docs/assets/app-preview-host-dashboard.png) | ![Host Dashboard completed-state preview](docs/assets/app-preview-host-dashboard-completed.png) |
+
+| Guest Trust | Quality Report Detail |
+| --- | --- |
+| ![Guest Trust preview](docs/assets/app-preview-guest-trust.png) | ![Quality Report Detail preview](docs/assets/app-preview-quality-report-detail.png) |
 
 ## Quick Start
 
