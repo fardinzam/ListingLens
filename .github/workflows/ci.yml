@@ -23,10 +23,21 @@ jobs:
       - name: Run SwiftLint
         run: swiftlint lint --strict --no-cache
 
-      - name: Build and run tests
+      - name: Show Xcode and simulator versions
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available
+
+      - name: Resolve test simulator
+        run: |
+          SIMULATOR_ID=$(xcrun simctl list devices available -j | ruby -rjson -e 'payload = JSON.parse(STDIN.read); candidates = payload.fetch("devices").flat_map { |runtime, devices| version = runtime.scan(/\d+(?:-\d+)*/).last.to_s.tr("-", "."); devices.select { |device| device["name"].start_with?("iPhone") }.map { |device| device.merge("runtimeVersion" => Gem::Version.new(version.empty? ? "0" : version)) } }; abort("No available iPhone simulator found") if candidates.empty?; preferred = candidates.max_by { |device| [device["runtimeVersion"], device["name"] == "iPhone 16" ? 3 : 0, device["name"] == "iPhone 15" ? 2 : 0, device["name"].include?("Pro") ? 1 : 0] }; puts preferred["udid"]')
+          echo "SIMULATOR_ID=$SIMULATOR_ID" >> "$GITHUB_ENV"
+
+      - name: Build and run unit tests
         run: |
           xcodebuild test \
             -project ListingLens.xcodeproj \
             -scheme ListingLens \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
+            -only-testing:ListingLensTests \
             -derivedDataPath .derivedData

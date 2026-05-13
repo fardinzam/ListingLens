@@ -1,0 +1,4 @@
+excluded:
+  - .derivedData
+  - DerivedData
+  - build

@@ -29,7 +29,7 @@ struct HostDashboardViewModelTests {
         let viewModel = HostDashboardViewModel(repository: repository)
 
         viewModel.load()
-        try await Task.sleep(nanoseconds: 10_000_000)
+        try await waitForLoadedState(in: viewModel)
 
         #expect(repository.requestedPolicy == .staleWhileRefresh)
         #expect(viewModel.showsStaleDataBanner)
@@ -72,7 +72,7 @@ struct HostDashboardViewModelTests {
         )
 
         viewModel.load()
-        try await Task.sleep(nanoseconds: 10_000_000)
+        try await waitForLoadedState(in: viewModel)
 
         guard case let .loaded(data) = viewModel.state else {
             Issue.record("Expected loaded dashboard data.")
@@ -102,7 +102,7 @@ struct HostDashboardViewModelTests {
         let viewModel = HostDashboardViewModel(repository: repository)
 
         viewModel.load()
-        try await Task.sleep(nanoseconds: 10_000_000)
+        try await waitForLoadedState(in: viewModel)
         await viewModel.completeRecommendation(id: "rec_checkin_photos_001")
 
         #expect(repository.completedRecommendationID == "rec_checkin_photos_001")
@@ -164,6 +164,19 @@ struct HostDashboardViewModelTests {
             riskSignals: riskSignals,
             recommendations: recommendations
         )
+    }
+
+    @MainActor
+    private func waitForLoadedState(in viewModel: HostDashboardViewModel) async throws {
+        for _ in 0..<100 {
+            if case .loaded = viewModel.state {
+                return
+            }
+
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+
+        Issue.record("Timed out waiting for loaded dashboard state.")
     }
 }
 

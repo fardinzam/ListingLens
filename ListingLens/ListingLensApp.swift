@@ -20,7 +20,8 @@ struct ListingLensApp: App {
             CachedQualityReport.self,
             CachedRecommendationState.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let isUITesting = ProcessInfo.processInfo.arguments.contains("--ui-testing")
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isUITesting)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
